@@ -132,7 +132,14 @@ export class EvmWeb3Service {
   }
 
   toByte32(text: string) {
-    console.log(this.client.utils.fromAscii(text));
     return this.client.utils.fromAscii(text);
+  }
+
+  fromByte32ToString(text: string) {
+    return this.client.utils.toAscii(text);
+  }
+
+  checkSumAddress(address: string) {
+    return this.client.utils.toChecksumAddress(address);
   }
 }

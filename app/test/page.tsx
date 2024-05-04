@@ -4,7 +4,7 @@ import { useWallet } from '@coin98-com/wallet-adapter-react';
 import { useWalletModal } from '@coin98-com/wallet-adapter-react-ui';
 import dayjs from 'dayjs';
 
-import { ADDRESS_ZERO } from '@/services/constants';
+import { ADDRESS_ZERO, NETI_ADDRESS, TOUR_ADDRESS } from '@/services/constants';
 import { convertBalanceToWei, convertWeiToBalance } from '@/common/functions';
 
 import useUserBalanceQuery from '@/hooks/useUserBalanceQuery';
@@ -23,18 +23,18 @@ export default function TestPage() {
   const handleCreateTour = async () => {
     try {
       const title = Buffer.from('Tour 1');
-      const endTime = dayjs().valueOf();
+      const endTimeRegister = dayjs().add(10, 'minute').valueOf();
       const priceTour = convertBalanceToWei(10).toString();
       const guaranteeFee = convertBalanceToWei(1).toString();
       const limitClient = 3;
 
       const tourService = new TourService(adapter);
 
-      console.log({ title, endTime, priceTour, guaranteeFee, limitClient });
+      console.log({ title, endTimeRegister, priceTour, guaranteeFee, limitClient });
 
       const hash = await tourService.createTour(
-        'Tour 1',
-        endTime,
+        'tour-3',
+        endTimeRegister,
         priceTour,
         guaranteeFee,
         limitClient
@@ -47,12 +47,9 @@ export default function TestPage() {
 
   const handleApprove = async () => {
     const web3Service = new EvmWeb3Service(adapter);
-    const hashApprove = await web3Service.approveToken(
-      '0x59b05006dd3729C11a62Eb65562e7758cd3458E4',
-      address as string,
-      '0x68876F09F1A8A6EBC94e315d8F68cDf9079f0b92'
-    );
-    console.log('handleApprove ~ hashApprove:', hashApprove);
+
+    console.log('Check approve');
+    await web3Service.approveToken(NETI_ADDRESS, address as string, TOUR_ADDRESS);
   };
 
   return (
