@@ -1,5 +1,6 @@
 'use client';
 
+import CardTourSmall from '@/components/CardTourSmall';
 import Title from '@/components/Title';
 import TourCard from '@/components/TourCard';
 
@@ -10,7 +11,13 @@ export default function Home() {
         Tour Listing
       </Title>
 
-      <TourCard />
+      <div className='px-5 mt-2'>
+        <TourCard />
+      </div>
+
+      <div className='px-5 mt-2'>
+        <CardTourSmall />
+      </div>
     </main>
   );
 }

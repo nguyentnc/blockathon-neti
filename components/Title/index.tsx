@@ -56,7 +56,7 @@ const Title: FunctionComponent<PropsWithChildren<TitleProps>> = ({
     }
 
     return (
-      <Button onClick={onClick}>
+      <Button onClick={onClick} variant="ghost">
         {renderTitleMoreAction()}
         <Icon
           name={icon ?? 'arrow_right'}
