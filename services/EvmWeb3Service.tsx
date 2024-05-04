@@ -2,15 +2,14 @@ import Web3 from 'web3';
 import { AdapterWallet } from '@/types/common';
 
 import { VRC25_ABI } from './abi/VRC25';
-import { ADDRESS_ZERO } from './constants';
+import { ADDRESS_ZERO, MAX_INT } from './constants';
 
 export class EvmWeb3Service {
   client: Web3;
   adapter?: AdapterWallet;
-  MAX_INT = 115792089237316195423570985008687907853269984665640564039457584007913129639935;
 
   constructor(adapter?: AdapterWallet) {
-    this.client = new Web3('https://rpc-testnet.viction.xyz');
+    this.client = new Web3('https://rpc5.viction.xyz');
     this.adapter = adapter;
   }
 
@@ -61,7 +60,7 @@ export class EvmWeb3Service {
     try {
       const adapter = this.adapter as AdapterWallet;
       const tokenContract = this.getContract(VRC25_ABI, tokenAddress);
-      const approveABI = tokenContract.methods.approve(spenderAddress, this.MAX_INT).encodeABI();
+      const approveABI = tokenContract.methods.approve(spenderAddress, MAX_INT).encodeABI();
 
       const txn = {
         from: ownerAddress,
@@ -69,7 +68,7 @@ export class EvmWeb3Service {
         data: approveABI,
       };
 
-      const response = await adapter.sendTransaction(txn);
+      const response = await this.sendAndWaitTransaction(txn, adapter);
       return response;
     } catch (error) {
       console.log('EvmFungibleService ~ error:', error);
@@ -108,8 +107,10 @@ export class EvmWeb3Service {
   async sendAndWaitTransaction(transaction: any, adapter: any) {
     try {
       const txObject = { ...transaction };
+      txObject.gasLimit = 4700000;
 
       const gas = await this.client.eth.estimateGas(txObject);
+      console.log('EvmWeb3Service ~ sendAndWaitTransaction ~ gas:', gas);
       txObject.gas = Number(gas) * 2;
 
       const hashResponse = await adapter.sendTransaction(txObject);
@@ -128,5 +129,10 @@ export class EvmWeb3Service {
     } catch (error) {
       throw error;
     }
+  }
+
+  toByte32(text: string) {
+    console.log(this.client.utils.fromAscii(text));
+    return this.client.utils.fromAscii(text);
   }
 }
