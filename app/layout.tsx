@@ -26,7 +26,7 @@ export default function RootLayout({
         <ReactQueryProvider>
           <Coin98AdapterProvider>
             <Header />
-            <MissionAd />
+            {/* <MissionAd /> */}
             {children}
             <Coin98AdapterModal />
           </Coin98AdapterProvider>
