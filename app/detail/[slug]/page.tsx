@@ -3,6 +3,7 @@ import Image from 'next/image';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/Avatar';
 import { Skeleton } from '@/components/Skeleton';
+import { Button } from '@/components/Button';
 
 const DetailPage = () => {
   return (
@@ -97,6 +98,18 @@ const DetailPage = () => {
 
         {/* Divider */}
         <div className='h-[1px] bg-[#E6E6E6] my-6' />
+      </div>
+
+      <div className='sticky p-5 bottom-0 left-0 w-full bg-[#FC5201] flex items-center justify-between'>
+        <div className='text-white'>
+          <span className='font-semibold text-xl'>4300 NETI</span>
+          <br />
+          <span className='text-xs'>(Include Tour fee & Reservation)</span>
+        </div>
+
+        <Button variant='secondary' className='rounded-full uppercase font-semibold'>
+          Book tour
+        </Button>
       </div>
     </div>
   );
