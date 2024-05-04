@@ -1,13 +1,34 @@
+"use client";
 import { Fragment, FunctionComponent } from 'react';
 import { Button } from '@/components/Button';
 import Title from '@/components/Title';
 import MissionCard from '@/components/MissionCard';
+import { useWallet } from '@coin98-com/wallet-adapter-react';
+import { MissionService } from '@/services/MissionService';
+import { convertBalanceToWei } from '@/common/functions';
 
 interface MissionProps {
   className?: string;
 }
 
 const Mission: FunctionComponent<MissionProps> = ({ className }) => {
+  const adapter = useWallet();
+  const { address } = adapter;
+
+  const claimReward = async () => {
+    try {
+      const missionReward = new MissionService(adapter);
+      const hash = await missionReward.claimReward(
+        convertBalanceToWei(4).toString(),
+        0
+      );
+
+      console.log(hash);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <main className='px-5 pb-10 flex flex-col'>
       <div className='py-5'>
@@ -19,6 +40,7 @@ const Mission: FunctionComponent<MissionProps> = ({ className }) => {
           </div>
 
           <Button
+            onClick={claimReward}
             variant='secondary'
             className='rounded-full uppercase font-semibold'
           >
