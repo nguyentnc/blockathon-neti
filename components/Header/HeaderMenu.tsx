@@ -8,11 +8,13 @@ import { convertWeiToBalance, formatAddress, formatReadableNumber } from '@/comm
 
 import { BodyLock } from '../BodyLock';
 import useUserBalanceQuery from '@/hooks/useUserBalanceQuery';
+import { NETI_ADDRESS } from '@/services/constants';
+import Link from 'next/link';
 
 const menuItems = [
   {
     title: 'Tour Listing',
-    href: '/',
+    href: '/tour-listing/create',
   },
   {
     title: 'Mission',
@@ -32,7 +34,11 @@ const HeaderMenu = () => {
   const { address, disconnect } = useWallet();
   const [isOpen, setIsOpen] = useState(false);
 
-  const { data: balanceNeti } = useUserBalanceQuery('0x59b05006dd3729C11a62Eb65562e7758cd3458E4');
+  const { data: balanceNeti } = useUserBalanceQuery(NETI_ADDRESS);
+
+  const closeMenu = () => {
+    setIsOpen(false);
+  };
 
   return (
     <>
@@ -61,9 +67,12 @@ const HeaderMenu = () => {
         <ul className='space-y-6'>
           {menuItems.map(item => (
             <li key={item.title}>
-              <a href={item.href} className='hover:text-[#FC5201] transition'>
+              <Link
+                href={item.href}
+                onClick={closeMenu}
+                className='hover:text-[#FC5201] transition'>
                 {item.title}
-              </a>
+              </Link>
             </li>
           ))}
         </ul>

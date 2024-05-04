@@ -1,3 +1,5 @@
+"use client";
+
 import * as React from 'react';
 import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
@@ -10,6 +12,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default: 'bg-[#FC5201] text-white',
+        ghost: '',
         secondary: 'bg-white text-[#FC5201]',
       },
       size: {
