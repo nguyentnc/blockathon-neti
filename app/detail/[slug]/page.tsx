@@ -14,6 +14,8 @@ import { EvmWeb3Service } from '@/services/EvmWeb3Service';
 import { NETI_ADDRESS, TOUR_ADDRESS } from '@/services/constants';
 import { convertWeiToBalance } from '@/common/functions';
 import dayjs from 'dayjs';
+import Title from '@/components/Title';
+import CardTourSmall from '@/components/CardTourSmall';
 
 const DetailPage = () => {
   const { slug } = useParams();
@@ -229,7 +231,7 @@ const DetailPage = () => {
   };
 
   return (
-    <div>
+    <main>
       <div className='relative aspect-video'>
         <Image
           src='https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
@@ -321,6 +323,18 @@ const DetailPage = () => {
 
         {/* Divider */}
         <div className='h-[1px] bg-[#E6E6E6] my-6' />
+
+        <Title className='text-xl' moreAction={{}}>
+          More tour by Olivia
+        </Title>
+
+        {Array.from({ length: 5 }).map((i, j) => {
+          return (
+            <div key={j} className='mt-4'>
+              <CardTourSmall />
+            </div>
+          );
+        })}
       </div>
 
       {tourData && (
@@ -328,7 +342,7 @@ const DetailPage = () => {
           {renderFooter()}
         </div>
       )}
-    </div>
+    </main>
   );
 };
 

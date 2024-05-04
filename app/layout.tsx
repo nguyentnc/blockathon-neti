@@ -7,6 +7,8 @@ import Coin98AdapterModal from '@/components/modals/Coin98AdapterModal';
 import ReactQueryProvider from '@/components/providers/ReactQueryProvider';
 import Header from '@/components/Header';
 import MissionAd from '@/components/MissionAd';
+import ConfigHeightScreen from '@/lib/contexts/ConfigHeightScreen';
+import { cn } from '@/lib/utils';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -22,7 +24,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en'>
-      <body className={inter.className}>
+      <ConfigHeightScreen />
+      <body className={cn(inter.className, 'min-h-screen flex flex-col relative')}>
         <ReactQueryProvider>
           <Coin98AdapterProvider>
             <Header />
