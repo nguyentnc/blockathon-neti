@@ -7,7 +7,7 @@ interface IconProps {
 }
 
 const Icon: FunctionComponent<IconProps> = ({ name, className }) => {
-  return <span className={cn(className, )} />;
+  return <span className={cn(className, 'icon-' + name)} />;
 };
 
 export default Icon;
