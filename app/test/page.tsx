@@ -23,7 +23,7 @@ export default function TestPage() {
   const handleCreateTour = async () => {
     try {
       const title = Buffer.from('Tour 1');
-      const endTime = dayjs().add(30, 'minute').valueOf();
+      const endTime = dayjs().valueOf();
       const priceTour = convertBalanceToWei(10).toString();
       const guaranteeFee = convertBalanceToWei(1).toString();
       const limitClient = 3;
