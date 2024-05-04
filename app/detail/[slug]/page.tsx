@@ -12,7 +12,7 @@ import { Button } from '@/components/Button';
 import { useWallet } from '@coin98-com/wallet-adapter-react';
 import { EvmWeb3Service } from '@/services/EvmWeb3Service';
 import { NETI_ADDRESS, TOUR_ADDRESS } from '@/services/constants';
-import { convertWeiToBalance } from '@/common/functions';
+import { convertBalanceToWei, convertWeiToBalance, formatReadableNumber } from '@/common/functions';
 import dayjs from 'dayjs';
 import Title from '@/components/Title';
 import CardTourSmall from '@/components/CardTourSmall';
@@ -271,6 +271,11 @@ const DetailPage = () => {
           culinary journey off the beaten path to discover authentic local flavors. Unlike typical
           food tours, we'll skip the commonly known dishes like Pho, Spring Rolls, and Banh Mi
           Sandwiches, and instead introduce you to hidden gems that locals love.
+        </p>
+
+        <p className='mt-3 font-semibold'>
+          Guarantee Fee:{' '}
+          {formatReadableNumber(convertWeiToBalance(tourData?.guaranteeFee).toString())} NETI
         </p>
 
         {/* Divider */}

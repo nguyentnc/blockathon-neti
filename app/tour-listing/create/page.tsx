@@ -11,6 +11,8 @@ import { useWallet } from '@coin98-com/wallet-adapter-react';
 import { convertBalanceToWei } from '@/common/functions';
 import { TourService } from '@/services/TourService';
 import { EvmWeb3Service } from '@/services/EvmWeb3Service';
+import { NETI_ADDRESS, TOUR_ADDRESS } from '@/services/constants';
+import { useRouter } from 'next/navigation';
 
 interface TourListingCreateProps {
   className?: string;
@@ -20,16 +22,22 @@ const fieldWrapperClassName = 'grid w-full max-w-sm items-center gap-1.5 mt-4';
 
 const TourListingCreate: FunctionComponent<TourListingCreateProps> = () => {
   const adapter = useWallet();
+  const router = useRouter();
   const { address } = adapter;
 
   const handleApprove = async () => {
     const web3Service = new EvmWeb3Service(adapter);
-    const hashApprove = await web3Service.approveToken(
-      '0x59b05006dd3729C11a62Eb65562e7758cd3458E4',
+    const allowance = await web3Service.getTokenAllowance(
+      NETI_ADDRESS,
       address as string,
-      '0x68876F09F1A8A6EBC94e315d8F68cDf9079f0b92'
+      TOUR_ADDRESS
     );
-    console.log('handleApprove ~ hashApprove:', hashApprove);
+
+    if (allowance !== '0') {
+      return;
+    }
+
+    await web3Service.approveToken(NETI_ADDRESS, address as string, TOUR_ADDRESS);
   };
 
   const createTour = async (data: {
@@ -39,8 +47,7 @@ const TourListingCreate: FunctionComponent<TourListingCreateProps> = () => {
     guaranteeFeeNumber: number;
     limitClient: number;
   }) => {
-    const { title, endTime, priceTourNumber, guaranteeFeeNumber, limitClient } =
-      data;
+    const { title, endTime, priceTourNumber, guaranteeFeeNumber, limitClient } = data;
 
     try {
       const priceTour = convertBalanceToWei(priceTourNumber).toString();
@@ -56,7 +63,7 @@ const TourListingCreate: FunctionComponent<TourListingCreateProps> = () => {
         limitClient
       );
 
-      console.log(hash);
+      return hash;
     } catch (error) {
       console.log(error);
     }
@@ -69,58 +76,53 @@ const TourListingCreate: FunctionComponent<TourListingCreateProps> = () => {
 
     const data = event.target as any;
 
-    const title = data?.title?.value;
+    const title = data?.title?.value.toLowerCase().split(' ').join('-');
+    console.log('handleSubmit ~ title:', title);
     const endTime = dayjs(data?.endTime?.value).valueOf();
 
     const priceTourNumber = Number(data?.priceTour?.value);
     const guaranteeFeeNumber = Number(data?.guaranteeFee?.value);
     const limitClient = Number(data?.limitClient?.value);
 
-    const tokenAllowance = await web3Service.getTokenAllowance(
-      '0x59b05006dd3729C11a62Eb65562e7758cd3458E4',
-      address as string,
-      '0x68876F09F1A8A6EBC94e315d8F68cDf9079f0b92'
-    );
+    // console.log({
+    //   title,
+    //   endTime,
+    //   limitClient,
+    //   priceTourNumber,
+    //   guaranteeFeeNumber,
+    // });
 
-    if (Number(tokenAllowance) === 0) {
-      await handleApprove();
-    }
+    await handleApprove();
 
-    createTour({
+    const hash = await createTour({
       title,
       endTime,
       limitClient,
       priceTourNumber,
       guaranteeFeeNumber,
     });
+
+    if (hash) {
+      router.push(`/detail/${title}`);
+    }
   };
   return (
     <main className='p-5 pb-10 flex flex-col'>
       <form onSubmit={handleSubmit}>
-        <Title className='text-2xl font-semibold mb-10'>Crate Tour</Title>
+        <Title className='text-2xl font-semibold mb-10'>Create Tour</Title>
 
         <div className={fieldWrapperClassName}>
           <Label className='text-base font-normal' htmlFor='title'>
             Tour Name
           </Label>
-          <Input
-            type='title'
-            id='title'
-            className='text-base w-full'
-            placeholder='Tour Name'
-          />
+          <Input type='title' id='title' className='text-base w-full' placeholder='Tour Name' />
         </div>
 
         <div className={fieldWrapperClassName}>
           <Label className='text-base font-normal' htmlFor='endTime'>
             End Time
           </Label>
-          <Input
-            type='date'
-            id='endTime'
-            className='text-base w-full'
-            placeholder='End Time'
-          />
+          <Input type='date' id='endTime' className='text-base w-full' placeholder='End Time' />
         </div>
 
         <div className={fieldWrapperClassName}>
