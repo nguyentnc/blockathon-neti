@@ -8,6 +8,7 @@ import { convertWeiToBalance, formatAddress, formatReadableNumber } from '@/comm
 
 import { BodyLock } from '../BodyLock';
 import useUserBalanceQuery from '@/hooks/useUserBalanceQuery';
+import { NETI_ADDRESS } from '@/services/constants';
 
 const menuItems = [
   {
@@ -32,7 +33,7 @@ const HeaderMenu = () => {
   const { address, disconnect } = useWallet();
   const [isOpen, setIsOpen] = useState(false);
 
-  const { data: balanceNeti } = useUserBalanceQuery('0x59b05006dd3729C11a62Eb65562e7758cd3458E4');
+  const { data: balanceNeti } = useUserBalanceQuery(NETI_ADDRESS);
 
   return (
     <>

@@ -1,8 +1,7 @@
 import { AdapterWallet } from '@/types/common';
 import { EvmWeb3Service } from './EvmWeb3Service';
 import { TOUR_ABI } from './abi/TOUR';
-
-const TOUR_ADDRESS = '0x68876F09F1A8A6EBC94e315d8F68cDf9079f0b92';
+import { TOUR_ADDRESS } from './constants';
 
 export class TourService {
   web3: EvmWeb3Service;
@@ -15,7 +14,7 @@ export class TourService {
 
   async createTour(
     id: string,
-    endTime: number,
+    endTimeRegister: number,
     priceTour: string,
     guaranteeFee: string,
     limitClient: number
@@ -25,7 +24,8 @@ export class TourService {
     const createTourAbi = tourContract.methods
       .createTour(
         this.web3.toByte32(id),
-        Math.floor(endTime / 1000),
+        // Math.floor(endTime / 1000),
+        Math.floor(endTimeRegister / 1000),
         priceTour,
         guaranteeFee,
         limitClient
@@ -45,7 +45,7 @@ export class TourService {
   async registerTour(id: string) {
     const adapterWallet = this.adapter!;
     const tourContract = this.web3.getContract(TOUR_ABI, TOUR_ADDRESS);
-    const registerTourAbi = tourContract.methods.registerTour(id).encodeABI();
+    const registerTourAbi = tourContract.methods.registerTour(this.web3.toByte32(id)).encodeABI();
 
     const tx = {
       from: adapterWallet.address,
@@ -60,7 +60,7 @@ export class TourService {
   async cancelTour(id: string) {
     const adapterWallet = this.adapter!;
     const tourContract = this.web3.getContract(TOUR_ABI, TOUR_ADDRESS);
-    const cancelTourAbi = tourContract.methods.cancelTour(id).encodeABI();
+    const cancelTourAbi = tourContract.methods.cancelTour(this.web3.toByte32(id)).encodeABI();
 
     const tx = {
       from: adapterWallet.address,
@@ -75,7 +75,9 @@ export class TourService {
   async checkAttendance(id: string, wallets: string[]) {
     const adapterWallet = this.adapter!;
     const tourContract = this.web3.getContract(TOUR_ABI, TOUR_ADDRESS);
-    const checkAttendanceAbi = tourContract.methods.checkAttendance(id, wallets).encodeABI();
+    const checkAttendanceAbi = tourContract.methods
+      .checkAttendence(this.web3.toByte32(id), wallets)
+      .encodeABI();
 
     const tx = {
       from: adapterWallet.address,
@@ -91,7 +93,9 @@ export class TourService {
   async claimGuaranteeFee(id: string) {
     const adapterWallet = this.adapter!;
     const tourContract = this.web3.getContract(TOUR_ABI, TOUR_ADDRESS);
-    const claimGuaranteeFeeAbi = tourContract.methods.claimGuaranteeFee(id).encodeABI();
+    const claimGuaranteeFeeAbi = tourContract.methods
+      .claimGuaranteeFee(this.web3.toByte32(id))
+      .encodeABI();
 
     const tx = {
       from: adapterWallet.address,
@@ -107,7 +111,9 @@ export class TourService {
   async claimWhenCancel(id: string) {
     const adapterWallet = this.adapter!;
     const tourContract = this.web3.getContract(TOUR_ABI, TOUR_ADDRESS);
-    const claimWhenCancelAbi = tourContract.methods.claimWhenCancel(id).encodeABI();
+    const claimWhenCancelAbi = tourContract.methods
+      .claimWhenCancel(this.web3.toByte32(id))
+      .encodeABI();
 
     const tx = {
       from: adapterWallet.address,
@@ -120,8 +126,35 @@ export class TourService {
   }
 
   async getInfo(id: string) {
-    const tourContract = this.web3.getContract(TOUR_ABI, TOUR_ADDRESS);
-    const checkInfoData = tourContract.methods.checkInfoData(id).call();
-    console.log('TourService ~ checkInfo ~ checkInfoData:', checkInfoData);
+    try {
+      const tourContract = this.web3.getContract(TOUR_ABI, TOUR_ADDRESS);
+      const checkInfoData = await tourContract.methods.checkInfo(this.web3.toByte32(id)).call();
+      console.log('TourService ~ getInfo ~ checkInfoData:', checkInfoData);
+
+      return {
+        startTime: Number(checkInfoData?.startTime) * 1000,
+        endTimeRegister: Number(checkInfoData?.endTimeRegister) * 1000,
+        limitClient: checkInfoData?.limitClient,
+        priceTour: checkInfoData?.priceTour,
+        guaranteeFee: checkInfoData?.guaranteeFee,
+        tourGuide: checkInfoData?.tourGuide,
+        status: checkInfoData?.status,
+      };
+    } catch (error) {
+      console.log('TourService ~ getInfo ~ error:', error);
+      throw error;
+    }
+  }
+
+  async checkIsRegistered(id: string, address: string) {
+    try {
+      const tourContract = this.web3.getContract(TOUR_ABI, TOUR_ADDRESS);
+      console.log(this.adapter?.address);
+
+      return await tourContract.methods.checkIsRegistered(this.web3.toByte32(id), address).call();
+    } catch (error) {
+      console.log('TourService ~ getInfo ~ error:', error);
+      throw error;
+    }
   }
 }

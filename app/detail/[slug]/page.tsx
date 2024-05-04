@@ -1,11 +1,233 @@
-import React from 'react';
+'use client';
+
+import React, { useMemo } from 'react';
 import Image from 'next/image';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/Avatar';
 import { Skeleton } from '@/components/Skeleton';
+import { useQuery } from '@tanstack/react-query';
+import { useParams } from 'next/navigation';
+import { TourService } from '@/services/TourService';
 import { Button } from '@/components/Button';
+import { useWallet } from '@coin98-com/wallet-adapter-react';
+import { EvmWeb3Service } from '@/services/EvmWeb3Service';
+import { NETI_ADDRESS, TOUR_ADDRESS } from '@/services/constants';
+import { convertWeiToBalance } from '@/common/functions';
+import dayjs from 'dayjs';
 
 const DetailPage = () => {
+  const { slug } = useParams();
+  const adapter = useWallet();
+  const { address } = adapter;
+  const web3Service = new EvmWeb3Service();
+
+  const {
+    data: tourData,
+    isLoading,
+    refetch,
+  } = useQuery({
+    queryKey: ['tour-detail', slug],
+    queryFn: () => {
+      const tourService = new TourService();
+      return tourService.getInfo(slug as string);
+    },
+  });
+  console.log('DetailPage ~ tourData:', tourData);
+
+  const { data: isRegistered, refetch: refetchIsRegistered } = useQuery({
+    queryKey: ['is-registered', slug, address as string],
+    queryFn: () => {
+      const tourService = new TourService();
+      return tourService.checkIsRegistered(slug as string, address as string);
+    },
+    enabled: Boolean(address),
+  });
+
+  const isTourGuide = useMemo(() => {
+    if (!address || !tourData) {
+      return false;
+    }
+
+    return (
+      web3Service.checkSumAddress(address as string) ===
+      web3Service.checkSumAddress(tourData?.tourGuide)
+    );
+  }, [address, tourData]);
+
+  const isCanceled = useMemo(() => {
+    if (!tourData) {
+      return false;
+    }
+
+    return tourData?.status === false;
+  }, [tourData]);
+
+  const isEnded = dayjs().isAfter(tourData?.endTimeRegister);
+  const isStarted = tourData?.status;
+
+  const handleCancelTour = async () => {
+    try {
+      console.log('cancel tour');
+      const tourService = new TourService(adapter);
+      const hash = await tourService.cancelTour(slug as string);
+      refetch();
+      return hash;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleRegisterTour = async () => {
+    try {
+      console.log('register tour');
+      await handleApprove();
+      const tourService = new TourService(adapter);
+      const hash = await tourService.registerTour(slug as string);
+      refetch();
+      refetchIsRegistered();
+      return hash;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // const handleStartTour = async () => {
+  //   try {
+  //     await handleApprove();
+  //     const tourService = new TourService(adapter);
+  //     const hash = await tourService.checkAttendance(slug as string, []);
+  //     refetch();
+  //     return hash;
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+
+  const handleClaimGuaranteeFee = async () => {
+    try {
+      await handleApprove();
+      const tourService = new TourService(adapter);
+      const hash = await tourService.claimGuaranteeFee(slug as string);
+      refetch();
+      refetchIsRegistered();
+      return hash;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleClaimAfterCancel = async () => {
+    try {
+      console.log('claim after canceled');
+      await handleApprove();
+      const tourService = new TourService(adapter);
+      const hash = await tourService.claimWhenCancel(slug as string);
+      refetch();
+      refetchIsRegistered();
+      return hash;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleApprove = async () => {
+    const web3Service = new EvmWeb3Service(adapter);
+    const allowance = await web3Service.getTokenAllowance(
+      NETI_ADDRESS,
+      address as string,
+      TOUR_ADDRESS
+    );
+
+    if (allowance !== '0') {
+      return;
+    }
+
+    await web3Service.approveToken(NETI_ADDRESS, address as string, TOUR_ADDRESS);
+  };
+
+  // console.log({ isStarted });
+
+  const renderFooter = () => {
+    if (!tourData) return null;
+
+    // if (isStarted && !isEnded && isTourGuide) {
+    //   return (
+    //     <Button
+    //       variant='secondary'
+    //       disabled
+    //       className='ml-auto rounded-full uppercase font-semibold'>
+    //       Started
+    //     </Button>
+    //   );
+    // }
+
+    if (!isTourGuide && isCanceled && isRegistered) {
+      return (
+        <Button
+          variant='secondary'
+          onClick={handleClaimAfterCancel}
+          className='ml-auto rounded-full uppercase font-semibold'>
+          Claim Fund
+        </Button>
+      );
+    }
+
+    if (!isTourGuide && isRegistered) {
+      return (
+        <Button
+          variant='secondary'
+          onClick={handleClaimGuaranteeFee}
+          className='ml-auto rounded-full uppercase font-semibold'>
+          Claim guarantee fee
+        </Button>
+      );
+    }
+
+    if (isEnded) {
+      return (
+        <Button
+          variant='secondary'
+          disabled
+          className='ml-auto rounded-full uppercase font-semibold pointer-events-none'>
+          Ended
+        </Button>
+      );
+    }
+
+    return (
+      <>
+        {!isTourGuide && (
+          <div className='text-white'>
+            <span className='font-semibold text-xl'>
+              {convertWeiToBalance(tourData.priceTour).toString()} NETI
+            </span>
+            <br />
+            <span className='text-xs'>(Include Tour fee & Reservation)</span>
+          </div>
+        )}
+
+        {isCanceled && (
+          <Button
+            variant='secondary'
+            className='ml-auto rounded-full uppercase font-semibold'
+            disabled>
+            Canceled
+          </Button>
+        )}
+
+        {!isCanceled && (
+          <Button
+            variant='secondary'
+            className='ml-auto rounded-full uppercase font-semibold'
+            disabled={isRegistered}
+            onClick={isTourGuide ? handleCancelTour : handleRegisterTour}>
+            {isTourGuide ? 'Cancel tour' : isRegistered ? 'Booked' : 'Book tour'}
+          </Button>
+        )}
+      </>
+    );
+  };
+
   return (
     <div>
       <div className='relative aspect-video'>
@@ -18,12 +240,13 @@ const DetailPage = () => {
       </div>
 
       <div className='px-5 py-3'>
-        <div className='text-[#FC5201] text-xs font-semibold mb-2'>
-          [3 days] Starting at 12:00PM - 24/12/2024
-        </div>
+        {/* <div className='text-[#FC5201] text-xs font-semibold mb-2'>
+          Starting at 12:00PM - 24/12/2024
+        </div> */}
 
-        <h2 className='text-xl font-semibold mb-2'>
-          11D10N Ovation Of The Seas - Australia - New Zealand
+        <h2 className='text-xl font-semibold mb-2 capitalize'>
+          {(slug as string).split('-').join(' ')}{' '}
+          {isCanceled && <span className='text-[#FC5201]'>(Canceled)</span>}
         </h2>
 
         <div className='flex items-center gap-2'>
@@ -100,17 +323,11 @@ const DetailPage = () => {
         <div className='h-[1px] bg-[#E6E6E6] my-6' />
       </div>
 
-      <div className='sticky p-5 bottom-0 left-0 w-full bg-[#FC5201] flex items-center justify-between'>
-        <div className='text-white'>
-          <span className='font-semibold text-xl'>4300 NETI</span>
-          <br />
-          <span className='text-xs'>(Include Tour fee & Reservation)</span>
+      {tourData && (
+        <div className='sticky p-5 bottom-0 left-0 w-full bg-[#FC5201] flex items-center justify-between'>
+          {renderFooter()}
         </div>
-
-        <Button variant='secondary' className='rounded-full uppercase font-semibold'>
-          Book tour
-        </Button>
-      </div>
+      )}
     </div>
   );
 };

@@ -21,6 +21,11 @@ export const TOUR_ABI = [
         name: '_token',
         type: 'address',
       },
+      {
+        internalType: 'uint256',
+        name: '_protocolFee',
+        type: 'uint256',
+      },
     ],
     stateMutability: 'nonpayable',
     type: 'constructor',
@@ -215,6 +220,25 @@ export const TOUR_ABI = [
   {
     inputs: [
       {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+    ],
+    name: 'blackList',
+    outputs: [
+      {
+        internalType: 'bool',
+        name: '',
+        type: 'bool',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
         internalType: 'uint256',
         name: 'amount',
         type: 'uint256',
@@ -281,7 +305,7 @@ export const TOUR_ABI = [
           },
           {
             internalType: 'uint256',
-            name: 'endTime',
+            name: 'endTimeRegister',
             type: 'uint256',
           },
           {
@@ -313,6 +337,49 @@ export const TOUR_ABI = [
         internalType: 'struct CreateTour.TourInfo',
         name: '',
         type: 'tuple',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'bytes32',
+        name: 'id',
+        type: 'bytes32',
+      },
+      {
+        internalType: 'address',
+        name: 'user',
+        type: 'address',
+      },
+    ],
+    name: 'checkIsRegistered',
+    outputs: [
+      {
+        internalType: 'bool',
+        name: '',
+        type: 'bool',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'bytes32',
+        name: 'id',
+        type: 'bytes32',
+      },
+    ],
+    name: 'checkNumberParticipants',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
       },
     ],
     stateMutability: 'view',
@@ -366,7 +433,7 @@ export const TOUR_ABI = [
       },
       {
         internalType: 'uint256',
-        name: 'endTime',
+        name: 'endTimeRegister',
         type: 'uint256',
       },
       {
@@ -401,6 +468,24 @@ export const TOUR_ABI = [
       },
     ],
     stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256[]',
+        name: '_amounts',
+        type: 'uint256[]',
+      },
+      {
+        internalType: 'address[]',
+        name: '_tokens',
+        type: 'address[]',
+      },
+    ],
+    name: 'emergencyWithdraw',
+    outputs: [],
+    stateMutability: 'payable',
     type: 'function',
   },
   {
@@ -483,6 +568,24 @@ export const TOUR_ABI = [
       },
     ],
     name: 'registerTour',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'bytes32',
+        name: 'id',
+        type: 'bytes32',
+      },
+      {
+        internalType: 'bool',
+        name: 'status',
+        type: 'bool',
+      },
+    ],
+    name: 'setBlackList',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
