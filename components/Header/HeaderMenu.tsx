@@ -4,9 +4,10 @@ import React, { useState } from 'react';
 import { useWallet } from '@coin98-com/wallet-adapter-react';
 
 import { cn } from '@/lib/utils';
-import { formatAddress } from '@/common/functions';
+import { convertWeiToBalance, formatAddress, formatReadableNumber } from '@/common/functions';
 
 import { BodyLock } from '../BodyLock';
+import useUserBalanceQuery from '@/hooks/useUserBalanceQuery';
 
 const menuItems = [
   {
@@ -31,6 +32,8 @@ const HeaderMenu = () => {
   const { address, disconnect } = useWallet();
   const [isOpen, setIsOpen] = useState(false);
 
+  const { data: balanceNeti } = useUserBalanceQuery('0x59b05006dd3729C11a62Eb65562e7758cd3458E4');
+
   return (
     <>
       {isOpen && <BodyLock />}
@@ -46,7 +49,13 @@ const HeaderMenu = () => {
         )}>
         <div className='p-4 bg-[#F5F1ED] rounded-2xl mb-6'>
           <div className='text-sm'>{formatAddress(address as string)}</div>
-          <div className='text-xs'>Balance: 0.1 NETI</div>
+          <div className='text-xs'>
+            Balance:{' '}
+            {formatReadableNumber(convertWeiToBalance(balanceNeti).toString(), {
+              isTokenAmount: true,
+            })}{' '}
+            NETI
+          </div>
         </div>
 
         <ul className='space-y-6'>
