@@ -10,3 +10,9 @@ export const convertWeiToBalance = (amount: string | number, decimal = 18) => {
     return '0';
   }
 };
+
+export const formatAddress = (address: string, length = 6) => {
+  if (!address) return '';
+
+  return `${address.slice(0, length)}...${address.slice(-length)}`;
+};
