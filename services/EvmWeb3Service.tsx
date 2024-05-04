@@ -10,7 +10,7 @@ export class EvmWeb3Service {
   MAX_INT = 115792089237316195423570985008687907853269984665640564039457584007913129639935;
 
   constructor(adapter?: AdapterWallet) {
-    this.client = new Web3('https://rpc5.viction.xyz');
+    this.client = new Web3('https://rpc-testnet.viction.xyz');
     this.adapter = adapter;
   }
 
@@ -73,6 +73,59 @@ export class EvmWeb3Service {
       return response;
     } catch (error) {
       console.log('EvmFungibleService ~ error:', error);
+      throw error;
+    }
+  }
+
+  async getTransactionReceipt(hash: string, timeout = 30000): Promise<any> {
+    const now = Date.now();
+
+    return new Promise((resolve, reject) => {
+      const timer = setInterval(async () => {
+        try {
+          const isExpired = Date.now() - now >= timeout;
+
+          if (isExpired) {
+            timer && clearInterval(timer);
+            reject('Timeout when getting transaction receipt');
+          }
+
+          const txReceipt = await this.client.eth.getTransactionReceipt(hash);
+          console.log('tx receipt', txReceipt);
+
+          if (txReceipt) {
+            timer && clearTimeout(timer);
+            resolve(txReceipt);
+          }
+        } catch (error) {
+          clearInterval(timer);
+          reject('Error when getting transaction receipt');
+        }
+      }, 1000);
+    });
+  }
+
+  async sendAndWaitTransaction(transaction: any, adapter: any) {
+    try {
+      const txObject = { ...transaction };
+
+      const gas = await this.client.eth.estimateGas(txObject);
+      txObject.gas = Number(gas) * 2;
+
+      const hashResponse = await adapter.sendTransaction(txObject);
+      if (hashResponse.isError) {
+        throw new Error(hashResponse.error);
+      }
+
+      const hash = hashResponse?.data;
+      const txReceipt = await this.getTransactionReceipt(hash);
+
+      const txStatus = txReceipt?.status;
+
+      if (!txStatus) throw new Error('Transaction failed, please try again');
+
+      return hash as string;
+    } catch (error) {
       throw error;
     }
   }
