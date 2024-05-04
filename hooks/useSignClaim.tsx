@@ -41,9 +41,10 @@ export async function signClaim(
   }
   const value = {
     user,
-    amount: 1,
-    claimID: 1,
+    amount,
+    claimID,
   }
+  console.log('🚀 ~ file: useSignClaim.tsx:47 ~ value:', value);
 
   return await signer.signTypedData(domain, types, value)
   // const data: TypedMessage<any> = {

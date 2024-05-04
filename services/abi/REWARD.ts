@@ -283,14 +283,26 @@ export const REWARD_ABI = [
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_claimId",
-        "type": "uint256"
+        "components": [
+          {
+            "internalType": "address",
+            "name": "user",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "claimID",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct ClaimReward.ClaimInfo",
+        "name": "info",
+        "type": "tuple"
       },
       {
         "internalType": "bytes",

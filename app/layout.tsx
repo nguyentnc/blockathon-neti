@@ -30,7 +30,7 @@ export default function RootLayout({
           <Coin98AdapterProvider>
             <Header />
             {/* <MissionAd /> */}
-            <div className='bg-white'>{children}</div>
+            <div className='bg-white flex-1'>{children}</div>
             <Coin98AdapterModal />
           </Coin98AdapterProvider>
         </ReactQueryProvider>

@@ -4,9 +4,8 @@ import { EvmWeb3Service } from './EvmWeb3Service';
 import { REWARD_ABI } from './abi/REWARD';
 import { signClaim } from '@/hooks/useSignClaim';
 import { ethers } from 'ethers';
-import { convertBalanceToWei } from '@/common/functions';
 
-const REWARD_ADDRESS = '0xa4074F8174e178E47AA398e692AB30386FEda82f';
+const REWARD_ADDRESS = '0xB8DcbbBAA17ddf458E478654a0440C5d293CDd21';
 
 export class MissionService {
   web3: EvmWeb3Service;
@@ -20,7 +19,10 @@ export class MissionService {
   async claimReward(amount: string, claimId: number) {
     const adapterWallet = this.adapter!;
     const rewardContract = this.web3.getContract(REWARD_ABI, REWARD_ADDRESS);
-    console.log('🚀 ~ file: MissionService.tsx:23 ~ REWARD_ADDRESS:', REWARD_ADDRESS);
+    console.log(
+      '🚀 ~ file: MissionService.tsx:23 ~ REWARD_ADDRESS:',
+      REWARD_ADDRESS
+    );
     const signer = new ethers.Wallet(
       '0x967edf8107e48f73b4f02b60f2d08d53a83b0262d0513e99cf30df1f2c4d989d'
     );
@@ -32,9 +34,9 @@ export class MissionService {
       claimId,
       amount
     );
-    console.log('🚀 ~ file: MissionService.tsx:47 ~ signature:', signature);
+
     const rewardAbi = rewardContract.methods
-      .claimReward(amount, claimId, signature)
+      .claimReward({ user: adapterWallet.address, amount: Number(1), claimId: 1 }, signature)
       .encodeABI();
 
     const tx = {

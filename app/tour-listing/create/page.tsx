@@ -14,6 +14,18 @@ import { EvmWeb3Service } from '@/services/EvmWeb3Service';
 import { NETI_ADDRESS, TOUR_ADDRESS } from '@/services/constants';
 import { useRouter } from 'next/navigation';
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/AlertDialog';
+
 interface TourListingCreateProps {
   className?: string;
 }
@@ -37,7 +49,11 @@ const TourListingCreate: FunctionComponent<TourListingCreateProps> = () => {
       return;
     }
 
-    await web3Service.approveToken(NETI_ADDRESS, address as string, TOUR_ADDRESS);
+    await web3Service.approveToken(
+      NETI_ADDRESS,
+      address as string,
+      TOUR_ADDRESS
+    );
   };
 
   const createTour = async (data: {
@@ -47,7 +63,8 @@ const TourListingCreate: FunctionComponent<TourListingCreateProps> = () => {
     guaranteeFeeNumber: number;
     limitClient: number;
   }) => {
-    const { title, endTime, priceTourNumber, guaranteeFeeNumber, limitClient } = data;
+    const { title, endTime, priceTourNumber, guaranteeFeeNumber, limitClient } =
+      data;
 
     try {
       const priceTour = convertBalanceToWei(priceTourNumber).toString();
@@ -111,18 +128,45 @@ const TourListingCreate: FunctionComponent<TourListingCreateProps> = () => {
       <form onSubmit={handleSubmit}>
         <Title className='text-2xl font-semibold mb-10'>Create Tour</Title>
 
+        <AlertDialog>
+          <AlertDialogTrigger>Open</AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. This will permanently delete your
+                account and remove your data from our servers.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction>Continue</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
         <div className={fieldWrapperClassName}>
           <Label className='text-base font-normal' htmlFor='title'>
             Tour Name
           </Label>
-          <Input type='title' id='title' className='text-base w-full' placeholder='Tour Name' />
+          <Input
+            type='title'
+            id='title'
+            className='text-base w-full'
+            placeholder='Tour Name'
+          />
         </div>
 
         <div className={fieldWrapperClassName}>
           <Label className='text-base font-normal' htmlFor='endTime'>
             End Time
           </Label>
-          <Input type='date' id='endTime' className='text-base w-full' placeholder='End Time' />
+          <Input
+            type='date'
+            id='endTime'
+            className='text-base w-full'
+            placeholder='End Time'
+          />
         </div>
 
         <div className={fieldWrapperClassName}>
