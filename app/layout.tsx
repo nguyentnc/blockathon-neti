@@ -25,15 +25,22 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <ConfigHeightScreen />
-      <body className={cn(inter.className, 'min-h-screen flex flex-col relative')}>
-        <ReactQueryProvider>
-          <Coin98AdapterProvider>
-            <Header />
-            {/* <MissionAd /> */}
-            {children}
-            <Coin98AdapterModal />
-          </Coin98AdapterProvider>
-        </ReactQueryProvider>
+      <body
+        className={cn(
+          inter.className,
+          'bg-[#ffffff] min-h-screen flex flex-col relative'
+        )}
+      >
+        <div className='flex-1 flex flex-col max-w-[430px] w-full mx-auto'>
+          <ReactQueryProvider>
+            <Coin98AdapterProvider>
+              <Header />
+              {/* <MissionAd /> */}
+              {children}
+              <Coin98AdapterModal />
+            </Coin98AdapterProvider>
+          </ReactQueryProvider>
+        </div>
       </body>
     </html>
   );

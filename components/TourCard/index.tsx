@@ -51,7 +51,7 @@ const TourCard: FunctionComponent<TourCardProps> = ({ className }) => {
 
         <div className='flex items-center justify-between mt-8'>
           <div className='mr-1'>
-            <div className='text-xl font-semibold text-[#FC5201]'>4,300 NETI</div>
+            <div className='text-xl font-semibold text-[#FC5201]'>98.98 NETI</div>
             <span className='text-xs font-normal text-[#5E5E5E]'>
               (Include Tour & Reservation fee)
             </span>

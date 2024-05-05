@@ -30,7 +30,7 @@ const Mission = () => {
     try {
       const missionReward = new MissionService(adapter);
       const hash = await missionReward.claimReward(
-        convertBalanceToWei(4300).toString(),
+        convertBalanceToWei(9898).toString(),
         1
       );
 
@@ -49,7 +49,7 @@ const Mission = () => {
           <div className='text-white'>
             <span className='text-xs'>Total reward</span>
             <br />
-            <span className='font-semibold text-xl'>4300 NETI</span>
+            <span className='font-semibold text-xl'>9898 NETI</span>
           </div>
 
           <Button
