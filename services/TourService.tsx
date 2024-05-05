@@ -129,7 +129,6 @@ export class TourService {
     try {
       const tourContract = this.web3.getContract(TOUR_ABI, TOUR_ADDRESS);
       const checkInfoData = await tourContract.methods.checkInfo(this.web3.toByte32(id)).call();
-      console.log('TourService ~ getInfo ~ checkInfoData:', checkInfoData);
 
       return {
         startTime: Number(checkInfoData?.startTime) * 1000,
@@ -149,7 +148,6 @@ export class TourService {
   async checkIsRegistered(id: string, address: string) {
     try {
       const tourContract = this.web3.getContract(TOUR_ABI, TOUR_ADDRESS);
-      console.log(this.adapter?.address);
 
       return await tourContract.methods.checkIsRegistered(this.web3.toByte32(id), address).call();
     } catch (error) {

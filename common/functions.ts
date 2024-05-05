@@ -18,8 +18,6 @@ export const convertBalanceToWei = (amount: string | number, decimal = 18) => {
     const bigDecimal = BigNumber(10).pow(decimal);
     const bigAmount = new BigNumber(amount);
 
-    console.log(bigAmount.multipliedBy(bigDecimal).toString());
-
     return bigAmount.multipliedBy(bigDecimal);
   } catch (error) {
     return new BigNumber(0);

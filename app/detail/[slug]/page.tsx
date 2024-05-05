@@ -34,7 +34,6 @@ const DetailPage = () => {
       return tourService.getInfo(slug as string);
     },
   });
-  console.log('DetailPage ~ tourData:', tourData);
 
   const { data: isRegistered, refetch: refetchIsRegistered } = useQuery({
     queryKey: ['is-registered', slug, address as string],
@@ -65,7 +64,7 @@ const DetailPage = () => {
   }, [tourData]);
 
   const isEnded = dayjs().isAfter(tourData?.endTimeRegister);
-  const isStarted = tourData?.status;
+  // const isStarted = tourData?.status;
 
   const handleCancelTour = async () => {
     try {
@@ -152,17 +151,6 @@ const DetailPage = () => {
   const renderFooter = () => {
     if (!tourData) return null;
 
-    // if (isStarted && !isEnded && isTourGuide) {
-    //   return (
-    //     <Button
-    //       variant='secondary'
-    //       disabled
-    //       className='ml-auto rounded-full uppercase font-semibold'>
-    //       Started
-    //     </Button>
-    //   );
-    // }
-
     if (!isTourGuide && isCanceled && isRegistered) {
       return (
         <Button
@@ -201,7 +189,7 @@ const DetailPage = () => {
         {!isTourGuide && (
           <div className='text-white'>
             <span className='font-semibold text-xl'>
-              {convertWeiToBalance(tourData.priceTour).toString()} NETI
+              {formatReadableNumber(convertWeiToBalance(tourData.priceTour).toString())} NETI
             </span>
             <br />
             <span className='text-xs'>(Include Tour fee & Reservation)</span>
