@@ -1,6 +1,6 @@
 'use client';
 
-import { FormEvent, FunctionComponent } from 'react';
+import { FormEvent, FunctionComponent, useState } from 'react';
 import dayjs from 'dayjs';
 import Title from '@/components/Title';
 import { Input } from '@/components/Input';
@@ -23,7 +23,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from '@/components/AlertDialog';
 
 interface TourListingCreateProps {
@@ -34,8 +33,15 @@ const fieldWrapperClassName = 'grid w-full max-w-sm items-center gap-1.5 mt-4';
 
 const TourListingCreate: FunctionComponent<TourListingCreateProps> = () => {
   const adapter = useWallet();
-  const router = useRouter();
   const { address } = adapter;
+
+  const [isOpen, setIsOpen] = useState(false);
+  const [slug, setSlug] = useState('/');
+
+  const openModal = (slug: string) => {
+    setIsOpen(true);
+    setSlug(slug);
+  };
 
   const handleApprove = async () => {
     const web3Service = new EvmWeb3Service(adapter);
@@ -94,20 +100,12 @@ const TourListingCreate: FunctionComponent<TourListingCreateProps> = () => {
     const data = event.target as any;
 
     const title = data?.title?.value.toLowerCase().split(' ').join('-');
-    console.log('handleSubmit ~ title:', title);
-    const endTime = dayjs(data?.endTime?.value).valueOf();
+
+    const endTime = dayjs().add(3, 'minute').valueOf();
 
     const priceTourNumber = Number(data?.priceTour?.value);
     const guaranteeFeeNumber = Number(data?.guaranteeFee?.value);
     const limitClient = Number(data?.limitClient?.value);
-
-    // console.log({
-    //   title,
-    //   endTime,
-    //   limitClient,
-    //   priceTourNumber,
-    //   guaranteeFeeNumber,
-    // });
 
     await handleApprove();
 
@@ -120,7 +118,7 @@ const TourListingCreate: FunctionComponent<TourListingCreateProps> = () => {
     });
 
     if (hash) {
-      router.push(`/detail/${title}`);
+      openModal(`/detail/${title}`);
     }
   };
   return (
@@ -128,19 +126,21 @@ const TourListingCreate: FunctionComponent<TourListingCreateProps> = () => {
       <form onSubmit={handleSubmit}>
         <Title className='text-2xl font-semibold mb-10'>Create Tour</Title>
 
-        <AlertDialog>
-          <AlertDialogTrigger>Open</AlertDialogTrigger>
+        <AlertDialog open={isOpen}>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+              <AlertDialogTitle>Create successfully!</AlertDialogTitle>
               <AlertDialogDescription>
-                This action cannot be undone. This will permanently delete your
-                account and remove your data from our servers.
+                Do you want to detail tour?
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction>Continue</AlertDialogAction>
+              <AlertDialogCancel>
+                <Link href='/'>Cancel</Link>
+              </AlertDialogCancel>
+              <AlertDialogAction>
+                <Link href={slug}>Continue</Link>
+              </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>

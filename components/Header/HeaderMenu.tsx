@@ -18,16 +18,16 @@ const menuItems = [
   },
   {
     title: 'Mission',
-    href: '/',
+    href: '/mission',
   },
-  {
-    title: 'My Booked Ticket',
-    href: '/',
-  },
-  {
-    title: 'Saved List',
-    href: '/',
-  },
+  // {
+  //   title: 'My Booked Ticket',
+  //   href: '/',
+  // },
+  // {
+  //   title: 'Saved List',
+  //   href: '/',
+  // },
 ];
 
 const HeaderMenu = () => {

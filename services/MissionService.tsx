@@ -5,7 +5,7 @@ import { REWARD_ABI } from './abi/REWARD';
 import { signClaim } from '@/hooks/useSignClaim';
 import { ethers } from 'ethers';
 
-const REWARD_ADDRESS = '0xB8DcbbBAA17ddf458E478654a0440C5d293CDd21';
+const REWARD_ADDRESS = '0x4280a60DAb521AE78f86d8ef83EAB5885D082ad6';
 
 export class MissionService {
   web3: EvmWeb3Service;
@@ -36,7 +36,7 @@ export class MissionService {
     );
 
     const rewardAbi = rewardContract.methods
-      .claimReward({ user: adapterWallet.address, amount: Number(1), claimId: 1 }, signature)
+      .claimReward([adapterWallet.address, amount, claimId], signature)
       .encodeABI();
 
     const tx = {

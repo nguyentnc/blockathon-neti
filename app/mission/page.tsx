@@ -1,5 +1,5 @@
-"use client";
-import { Fragment, FunctionComponent } from 'react';
+'use client';
+import { Fragment, FunctionComponent, useState } from 'react';
 import { Button } from '@/components/Button';
 import Title from '@/components/Title';
 import MissionCard from '@/components/MissionCard';
@@ -7,13 +7,30 @@ import { useWallet } from '@coin98-com/wallet-adapter-react';
 import { MissionService } from '@/services/MissionService';
 import { convertBalanceToWei } from '@/common/functions';
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/AlertDialog';
+
 interface MissionProps {
   className?: string;
 }
 
-const Mission: FunctionComponent<MissionProps> = ({ className }) => {
+const Mission: FunctionComponent<MissionProps> = () => {
   const adapter = useWallet();
   const { address } = adapter;
+
+  const [isOpen, setIsOpen] = useState(false);
+
+  const closeAlert = () => {
+    setIsOpen(false);
+  };
 
   const claimReward = async () => {
     try {
@@ -23,7 +40,9 @@ const Mission: FunctionComponent<MissionProps> = ({ className }) => {
         0
       );
 
-      console.log(hash);
+      if (hash) {
+        setIsOpen(true);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -60,6 +79,20 @@ const Mission: FunctionComponent<MissionProps> = ({ className }) => {
           </Fragment>
         );
       })}
+
+      <AlertDialog open={isOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Claim successfully!</AlertDialogTitle>
+            <AlertDialogDescription>
+              Congratulations! Let's start with the trips
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={closeAlert}>Ok</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </main>
   );
 };
