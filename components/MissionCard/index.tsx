@@ -16,7 +16,7 @@ const MissionCard: FunctionComponent<MissionCardProps> = ({
   return (
     <div className={className}>
       <div className='bg-[#FC520129] text-[#FC5201] px-2 py-1 text-xs font-semibold w-max rounded-full'>
-        4,300 C98
+        4,300 NETI
       </div>
 
       <Title className='text-xl font-semibold mt-1'>Tour around Website</Title>

@@ -30,8 +30,8 @@ const Mission = () => {
     try {
       const missionReward = new MissionService(adapter);
       const hash = await missionReward.claimReward(
-        convertBalanceToWei(4).toString(),
-        0
+        convertBalanceToWei(4300).toString(),
+        1
       );
 
       if (hash) {
