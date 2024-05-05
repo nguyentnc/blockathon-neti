@@ -1,5 +1,5 @@
 'use client';
-import { Fragment, FunctionComponent, useState } from 'react';
+import { Fragment, useState } from 'react';
 import { Button } from '@/components/Button';
 import Title from '@/components/Title';
 import MissionCard from '@/components/MissionCard';
@@ -10,7 +10,6 @@ import { convertBalanceToWei } from '@/common/functions';
 import {
   AlertDialog,
   AlertDialogAction,
-  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
@@ -18,13 +17,8 @@ import {
   AlertDialogTitle,
 } from '@/components/AlertDialog';
 
-interface MissionProps {
-  className?: string;
-}
-
-const Mission: FunctionComponent<MissionProps> = () => {
+const Mission = () => {
   const adapter = useWallet();
-  const { address } = adapter;
 
   const [isOpen, setIsOpen] = useState(false);
 

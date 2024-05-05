@@ -1,6 +1,6 @@
 'use client';
 
-import { FormEvent, FunctionComponent, useState } from 'react';
+import { FormEvent, useState } from 'react';
 import dayjs from 'dayjs';
 import Title from '@/components/Title';
 import { Input } from '@/components/Input';
@@ -12,7 +12,6 @@ import { convertBalanceToWei } from '@/common/functions';
 import { TourService } from '@/services/TourService';
 import { EvmWeb3Service } from '@/services/EvmWeb3Service';
 import { NETI_ADDRESS, TOUR_ADDRESS } from '@/services/constants';
-import { useRouter } from 'next/navigation';
 
 import {
   AlertDialog,
@@ -25,13 +24,9 @@ import {
   AlertDialogTitle,
 } from '@/components/AlertDialog';
 
-interface TourListingCreateProps {
-  className?: string;
-}
-
 const fieldWrapperClassName = 'grid w-full max-w-sm items-center gap-1.5 mt-4';
 
-const TourListingCreate: FunctionComponent<TourListingCreateProps> = () => {
+const TourListingCreate = () => {
   const adapter = useWallet();
   const { address } = adapter;
 
