@@ -1,5 +1,7 @@
 import BigNumber from 'bignumber.js';
 
+BigNumber.config({ EXPONENTIAL_AT: 1e9 });
+
 export const convertWeiToBalance = (amount: string | number, decimal = 18) => {
   try {
     const bigDecimal = BigNumber(10).pow(decimal);
@@ -15,6 +17,8 @@ export const convertBalanceToWei = (amount: string | number, decimal = 18) => {
   try {
     const bigDecimal = BigNumber(10).pow(decimal);
     const bigAmount = new BigNumber(amount);
+
+    console.log(bigAmount.multipliedBy(bigDecimal).toString());
 
     return bigAmount.multipliedBy(bigDecimal);
   } catch (error) {

@@ -14,13 +14,9 @@ import { EvmWeb3Service } from '@/services/EvmWeb3Service';
 import { NETI_ADDRESS, TOUR_ADDRESS } from '@/services/constants';
 import { useRouter } from 'next/navigation';
 
-interface TourListingCreateProps {
-  className?: string;
-}
-
 const fieldWrapperClassName = 'grid w-full max-w-sm items-center gap-1.5 mt-4';
 
-const TourListingCreate: FunctionComponent<TourListingCreateProps> = () => {
+const TourListingCreate = () => {
   const adapter = useWallet();
   const router = useRouter();
   const { address } = adapter;

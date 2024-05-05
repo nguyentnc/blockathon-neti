@@ -3,11 +3,7 @@ import { Button } from '@/components/Button';
 import Title from '@/components/Title';
 import MissionCard from '@/components/MissionCard';
 
-interface MissionProps {
-  className?: string;
-}
-
-const Mission: FunctionComponent<MissionProps> = ({ className }) => {
+const Mission = () => {
   return (
     <main className='px-5 pb-10 flex flex-col'>
       <div className='py-5'>
@@ -18,10 +14,7 @@ const Mission: FunctionComponent<MissionProps> = ({ className }) => {
             <span className='font-semibold text-xl'>4300 NETI</span>
           </div>
 
-          <Button
-            variant='secondary'
-            className='rounded-full uppercase font-semibold'
-          >
+          <Button variant='secondary' className='rounded-full uppercase font-semibold'>
             Claim now
           </Button>
         </div>
