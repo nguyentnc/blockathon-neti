@@ -2,6 +2,7 @@
 
 import Title from '@/components/Title';
 import TourCard from '@/components/TourCard';
+import Link from 'next/link';
 
 export default function Home() {
   return (
@@ -11,7 +12,9 @@ export default function Home() {
       {Array.from({ length: 20 }).map((_item, index) => {
         return (
           <div key={index} className='px-5 mt-3'>
-            <TourCard />
+            <Link href="/detail/[slug]" as="/detail/dalat">
+              <TourCard />
+            </Link>
           </div>
         );
       })}

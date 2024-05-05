@@ -1,6 +1,6 @@
 'use client';
 
-import { FormEvent, FunctionComponent } from 'react';
+import { FormEvent, useState } from 'react';
 import dayjs from 'dayjs';
 import Title from '@/components/Title';
 import { Input } from '@/components/Input';
@@ -12,14 +12,31 @@ import { convertBalanceToWei } from '@/common/functions';
 import { TourService } from '@/services/TourService';
 import { EvmWeb3Service } from '@/services/EvmWeb3Service';
 import { NETI_ADDRESS, TOUR_ADDRESS } from '@/services/constants';
-import { useRouter } from 'next/navigation';
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/AlertDialog';
 
 const fieldWrapperClassName = 'grid w-full max-w-sm items-center gap-1.5 mt-4';
 
 const TourListingCreate = () => {
   const adapter = useWallet();
-  const router = useRouter();
   const { address } = adapter;
+
+  const [isOpen, setIsOpen] = useState(false);
+  const [slug, setSlug] = useState('/');
+
+  const openModal = (slug: string) => {
+    setIsOpen(true);
+    setSlug(slug);
+  };
 
   const handleApprove = async () => {
     const web3Service = new EvmWeb3Service(adapter);
@@ -33,7 +50,11 @@ const TourListingCreate = () => {
       return;
     }
 
-    await web3Service.approveToken(NETI_ADDRESS, address as string, TOUR_ADDRESS);
+    await web3Service.approveToken(
+      NETI_ADDRESS,
+      address as string,
+      TOUR_ADDRESS
+    );
   };
 
   const createTour = async (data: {
@@ -43,7 +64,8 @@ const TourListingCreate = () => {
     guaranteeFeeNumber: number;
     limitClient: number;
   }) => {
-    const { title, endTime, priceTourNumber, guaranteeFeeNumber, limitClient } = data;
+    const { title, endTime, priceTourNumber, guaranteeFeeNumber, limitClient } =
+      data;
 
     try {
       const priceTour = convertBalanceToWei(priceTourNumber).toString();
@@ -73,20 +95,12 @@ const TourListingCreate = () => {
     const data = event.target as any;
 
     const title = data?.title?.value.toLowerCase().split(' ').join('-');
-    console.log('handleSubmit ~ title:', title);
-    const endTime = dayjs(data?.endTime?.value).valueOf();
+
+    const endTime = dayjs().add(3, 'minute').valueOf();
 
     const priceTourNumber = Number(data?.priceTour?.value);
     const guaranteeFeeNumber = Number(data?.guaranteeFee?.value);
     const limitClient = Number(data?.limitClient?.value);
-
-    // console.log({
-    //   title,
-    //   endTime,
-    //   limitClient,
-    //   priceTourNumber,
-    //   guaranteeFeeNumber,
-    // });
 
     await handleApprove();
 
@@ -99,7 +113,7 @@ const TourListingCreate = () => {
     });
 
     if (hash) {
-      router.push(`/detail/${title}`);
+      openModal(`/detail/${title}`);
     }
   };
   return (
@@ -107,18 +121,47 @@ const TourListingCreate = () => {
       <form onSubmit={handleSubmit}>
         <Title className='text-2xl font-semibold mb-10'>Create Tour</Title>
 
+        <AlertDialog open={isOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Create successfully!</AlertDialogTitle>
+              <AlertDialogDescription>
+                Do you want to detail tour?
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>
+                <Link href='/'>Cancel</Link>
+              </AlertDialogCancel>
+              <AlertDialogAction>
+                <Link href={slug}>Continue</Link>
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
         <div className={fieldWrapperClassName}>
           <Label className='text-base font-normal' htmlFor='title'>
             Tour Name
           </Label>
-          <Input type='title' id='title' className='text-base w-full' placeholder='Tour Name' />
+          <Input
+            type='title'
+            id='title'
+            className='text-base w-full'
+            placeholder='Tour Name'
+          />
         </div>
 
         <div className={fieldWrapperClassName}>
           <Label className='text-base font-normal' htmlFor='endTime'>
             End Time
           </Label>
-          <Input type='date' id='endTime' className='text-base w-full' placeholder='End Time' />
+          <Input
+            type='date'
+            id='endTime'
+            className='text-base w-full'
+            placeholder='End Time'
+          />
         </div>
 
         <div className={fieldWrapperClassName}>

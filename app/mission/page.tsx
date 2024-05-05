@@ -1,9 +1,47 @@
-import { Fragment, FunctionComponent } from 'react';
+'use client';
+import { Fragment, useState } from 'react';
 import { Button } from '@/components/Button';
 import Title from '@/components/Title';
 import MissionCard from '@/components/MissionCard';
+import { useWallet } from '@coin98-com/wallet-adapter-react';
+import { MissionService } from '@/services/MissionService';
+import { convertBalanceToWei } from '@/common/functions';
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/AlertDialog';
 
 const Mission = () => {
+  const adapter = useWallet();
+
+  const [isOpen, setIsOpen] = useState(false);
+
+  const closeAlert = () => {
+    setIsOpen(false);
+  };
+
+  const claimReward = async () => {
+    try {
+      const missionReward = new MissionService(adapter);
+      const hash = await missionReward.claimReward(
+        convertBalanceToWei(4).toString(),
+        0
+      );
+
+      if (hash) {
+        setIsOpen(true);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <main className='px-5 pb-10 flex flex-col'>
       <div className='py-5'>
@@ -14,7 +52,11 @@ const Mission = () => {
             <span className='font-semibold text-xl'>4300 NETI</span>
           </div>
 
-          <Button variant='secondary' className='rounded-full uppercase font-semibold'>
+          <Button
+            onClick={claimReward}
+            variant='secondary'
+            className='rounded-full uppercase font-semibold'
+          >
             Claim now
           </Button>
         </div>
@@ -31,6 +73,20 @@ const Mission = () => {
           </Fragment>
         );
       })}
+
+      <AlertDialog open={isOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Claim successfully!</AlertDialogTitle>
+            <AlertDialogDescription>
+              Congratulations! Let's start with the trips
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={closeAlert}>Ok</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </main>
   );
 };
